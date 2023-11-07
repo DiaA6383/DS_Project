@@ -53,7 +53,7 @@ This project is currently not open for public contributions. However, feedback a
 This project is licensed under the MIT License - see the `LICENSE.md` file for details.
 
 ## Contact
-For any inquiries or more information, please contact Alejandro Diaz at [your-email@example.com].
+For any inquiries or more information, please contact Alejandro Diaz at [addiaz95@outlook.com].
 
 ---
 
