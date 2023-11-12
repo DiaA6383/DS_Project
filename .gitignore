@@ -1,0 +1,14 @@
+# Virtual environment folder
+venv/
+
+# Data files
+data/*.csv
+
+# If you have specific CSV files you want to include, you can negate the ignore with !:
+# !data/important-dataset.csv
+
+# Python byte-compiled files
+*.pyc
+
+# Caching folders
+__pycache__/
