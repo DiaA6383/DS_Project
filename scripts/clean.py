@@ -16,21 +16,17 @@ def clean_data(file_path, rename_dict):
     # Load the data from the CSV file into a pandas DataFrame
     data = pd.read_csv(file_path, header=1)
     # Rename the columns based on the metadata
-    data = data.rename(columns=rename_dict)
-    # Clean the 'Geographic Area Name' column
-    data['Geographic Area Name'] = data['Geographic Area Name'].str.replace('ZCTA5 ', '')
-    # Rename the 'Geographic Area Name' column to 'Zip Code'
-    data = data.rename(columns={'Geographic Area Name': 'Zip Code'})
-    # Drop the 'Geography' column
-    data = data.drop(columns=['Geography'])
-    # Drop columns that start with 'Annotation'
-    data = data.loc[:, ~data.columns.str.startswith('Annotation')]
-    # Drop columns that start with 'Margin of Error!!'
-    data = data.loc[:, ~data.columns.str.startswith('Margin of Error!!')]
-    # Replace 'Estimate!!' with '' in column names
+    data.rename(columns=rename_dict, inplace=True)
+    # Clean the 'Geographic Area Name' column and rename it to 'Zip Code'
+    data.rename(columns={'Geographic Area Name': 'Zip Code'}, inplace=True)
+    data['Zip Code'] = data['Zip Code'].str.replace('ZCTA5 ', '')
+    # Drop the 'Geography' column and columns that start with 'Annotation' or 'Margin of Error!!'
+    data.drop(columns=['Geography'], inplace=True)
+    data.drop(data.columns[data.columns.str.startswith(('Annotation', 'Margin of Error!!'))], axis=1, inplace=True)
+    # Replace 'Estimate!!' and 'Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!' in column names
     data.columns = data.columns.str.replace('Estimate!!', '')
-    # Replace 'Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!' with 'Number of ' in column names
     data.columns = data.columns.str.replace('Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!', 'Number of ')
+    data.drop(data.columns[2:15], axis=1, inplace=True)
     return data
 
 def main():
