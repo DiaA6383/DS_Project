@@ -2,17 +2,14 @@ import pandas as pd
 
 # Define the paths to the metadata, data, and cleaned data CSV files
 METADATA_FILE_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/raw/ACSST5Y2021.S1903_2023-11-14T204901/metadata.csv'
-CSV_FILE_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/raw/ACSST5Y2021.S1903_2023-11-14T204901/data.csv'
+DATA_FILE_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/raw/ACSST5Y2021.S1903_2023-11-14T204901/data.csv'
 CLEANED_DATA_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/processed/cleaned_data.csv'
 
-def load_metadata(file_path):
-    metadata = pd.read_csv(file_path)
-    rename_dict = dict(zip(metadata['Column Name'], metadata['Label']))
-    return rename_dict
+def load_csv(file_path):
+    return pd.read_csv(file_path, header=1)
 
-def load_data(file_path):
-    data = pd.read_csv(file_path, header=1)
-    return data
+def get_rename_dict(metadata):
+    return dict(zip(metadata['Column Name'], metadata['Label']))
 
 def rename_columns(data, rename_dict):
     data.rename(columns=rename_dict, inplace=True)
@@ -40,8 +37,9 @@ def clean_data(data):
     return data
 
 def main():
-    rename_dict = load_metadata(METADATA_FILE_PATH)
-    data = load_data(CSV_FILE_PATH)
+    metadata = load_csv(METADATA_FILE_PATH)
+    rename_dict = get_rename_dict(metadata)
+    data = load_csv(DATA_FILE_PATH)
     data = rename_columns(data, rename_dict)
     cleaned_data = clean_data(data)
     cleaned_data.to_csv(CLEANED_DATA_PATH, index=False)
