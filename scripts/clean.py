@@ -33,6 +33,10 @@ def clean_data(data):
     data.rename(columns={'Number!!FAMILY INCOME BY NUMBER OF EARNERS!!No earners': 'Families with no Earners'}, inplace=True)
     data.drop(data.columns[5:17], axis=1, inplace=True)
     data.drop(data.columns[6:26], axis=1, inplace=True)
+    data.drop(data.columns[6:10], axis=1, inplace=True)
+    data.drop(data.columns[9: 32], axis=1, inplace=True)
+    data.drop(data.columns[10: 23], axis=1, inplace=True)
+    data.drop(data.columns[11::], axis=1, inplace=True)
     return data
 
 def main():
