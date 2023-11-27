@@ -72,7 +72,7 @@ def generate_heatmap(cleaned_data_path, shapefile_path, output_map_path):
 
 if __name__ == '__main__':
     # Define the paths to the cleaned data CSV file, shapefile, and output map HTML file
-    CLEANED_DATA_PATH = '../data/processed/cleaned_data.csv'
+    CLEANED_DATA_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/processed/cleaned_data.csv'
     SHAPEFILE_PATH = '../data/raw/Modified Zip Code Tabulation Areas (MODZCTA)/geo_export_152003af-efec-4038-9b6f-1963116a24c2.shp'
     OUTPUT_MAP_PATH = '../maps/nyc_heatmap.html'
 
