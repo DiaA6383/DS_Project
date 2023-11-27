@@ -26,7 +26,13 @@ def clean_data(file_path, rename_dict):
     # Replace 'Estimate!!' and 'Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!' in column names
     data.columns = data.columns.str.replace('Estimate!!', '')
     data.columns = data.columns.str.replace('Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!', 'Number of ')
+    data.columns = data.columns.str.replace("Number!!FAMILIES!!", "Number of ")
+    #Drop Race Columns
     data.drop(data.columns[2:15], axis=1, inplace=True)
+    #Rename second column named "Number of Households" with "Total Households"
+    data.rename(columns={'Number of Households': 'Total Households'}, inplace=True)
+    #drop 4th and 5th columns
+    data.drop(data.columns[4:6], axis=1, inplace=True)
     return data
 
 def main():
