@@ -20,9 +20,14 @@ def generate_heatmap(cleaned_data_path, shapefile_path, output_map_path):
     # Load shapefile
     nyc_shapefile = gpd.read_file(shapefile_path)
 
-    # Merge cleaned data with the shapefile
-    nyc_data_merged = nyc_shapefile.merge(cleaned_data, left_on='ZIPCODE', right_on='Zip Code')
+    # Convert 'modzcta' to int
+    nyc_shapefile['modzcta'] = nyc_shapefile['modzcta'].astype(int)
 
+    # Convert 'Zip Code' to int
+    cleaned_data['Zip Code'] = cleaned_data['Zip Code'].astype(int)
+
+    # Now merge
+    nyc_data_merged = nyc_shapefile.merge(cleaned_data, left_on='modzcta', right_on='Zip Code')
     # Create map
     m = folium.Map(location=[40.693943, -73.985880], zoom_start=10)
 
@@ -31,8 +36,8 @@ def generate_heatmap(cleaned_data_path, shapefile_path, output_map_path):
         geo_data=nyc_data_merged,
         name='choropleth',
         data=nyc_data_merged,
-        columns=['ZIPCODE', 'Total Households'],
-        key_on='feature.properties.ZIPCODE',
+        columns=['modzcta', 'Total Households'],
+        key_on='feature.properties.modzcta',
         fill_color='YlGn',
         fill_opacity=0.7,
         line_opacity=0.2,
@@ -43,10 +48,12 @@ def generate_heatmap(cleaned_data_path, shapefile_path, output_map_path):
     m.save(output_map_path)
 
 if __name__ == '__main__':
-    # Define the paths to the cleaned data CSV file, shapefile, and output map HTML file
+    # Define the paths to the cleaned data CSV file, shapefile, and output map HTML filenyc_data_merged = nyc_shapefile.merge(cleaned_data, left_on='zcta', right_on='Zip Code')
     CLEANED_DATA_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/processed/cleaned_data.csv'
-    SHAPEFILE_PATH = '../data/raw/Modified Zip Code Tabulation Areas (MODZCTA)/geo_export_152003af-efec-4038-9b6f-1963116a24c2.shp'
-    OUTPUT_MAP_PATH = '../maps/nyc_heatmap.html'
+    SHAPEFILE_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/raw/Modified Zip Code Tabulation Areas (MODZCTA)/geo_export_152003af-efec-4038-9b6f-1963116a24c2.shp'
+    OUTPUT_MAP_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/maps/nyc_heatmap.html'
 
     # Generate the heatmap
     generate_heatmap(CLEANED_DATA_PATH, SHAPEFILE_PATH, OUTPUT_MAP_PATH)
+    nyc_shapefile = gpd.read_file(SHAPEFILE_PATH)
+    print(nyc_shapefile.columns)
