@@ -26,5 +26,5 @@ def main(file_path):
     print_second_column_from_csv(file_path)
 
 if __name__ == '__main__':
-    META_FILE = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/raw/ACSST5Y2021.S1903_2023-11-14T204901/ACSST5Y2021.S1903-Column-Metadata.csv'
+    META_FILE = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/raw/ACSST5Y2021.S1903_2023-11-14T204901/metadata.csv'
     main(META_FILE)
