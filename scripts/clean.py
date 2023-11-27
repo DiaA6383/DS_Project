@@ -7,10 +7,27 @@ CSV_FILE_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/raw/ACSST
 # Define the path to where you want to save your processed data CSV file
 CLEANED_DATA_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/processed/cleaned_data.csv'
 
+def clean_column_names(column_names):
+    replacements = {
+        "Estimate!!": "",
+        "Margin of Error!!": "MOE_",
+        "Annotation of Estimate!!": "Note_",
+        "Annotation of Margin of Error!!": "Note_MOE_",
+        "Number!!": "",
+        "Percent Distribution!!": "PctDist_",
+        # Add more replacements as needed
+    }
+
+    clean_names = []
+    for name in column_names:
+        for to_replace, replacement in replacements.items():
+            name = name.replace(to_replace, replacement)
+        name = name.replace('!!', '_')
+        clean_names.append(name)
+
+    return clean_names
+
 def load_metadata(file_path):
-    """
-    Loads the metadata and creates a dictionary for column renaming.
-    """
     metadata = pd.read_csv(file_path)
     rename_dict = dict(zip(metadata['Column Name'], metadata['Label']))
     return rename_dict
@@ -23,12 +40,11 @@ def clean_data(file_path, rename_dict):
     data = data.rename(columns=rename_dict)  # Rename columns based on metadata
     data['Geographic Area Name'] = data['Geographic Area Name'].str.replace('ZCTA5 ', '')
     data = data.rename(columns={'Geographic Area Name': 'Zip Code'})
+    #drop Geography column
+    data = data.drop(columns=['Geography'])
     return data
 
 def main():
-    """
-    This is the main function that calls the clean_data function.
-    """
     # Load the renaming dictionary from the metadata file
     rename_dict = load_metadata(METADATA_FILE_PATH)
     
