@@ -1,34 +1,6 @@
 import geopandas as gpd
 import folium
 import pandas as pd
-"""
-Visualize Heatmap of NYC Data
-
-This script reads in a cleaned dataset containing New York City information by ZIP code and a shapefile of NYC ZIP code boundaries.
-It merges these datasets and uses Folium to generate an interactive heatmap visualization. The resulting map highlights the
-distribution of a specified indicator across different ZIP codes in NYC with color gradients to represent different data ranges.
-
-The heatmap is saved as an HTML file that can be opened in a web browser.
-
-Usage:
-    Run this script after the data cleaning process has been completed and you have a 'cleaned_data.csv' file. Ensure that
-    the shapefile with ZIP code boundaries is correctly formatted and located in the specified path. The script expects the
-    following files:
-        - Cleaned data CSV: '../data/processed/cleaned_data.csv'
-        - NYC ZIP code shapefile: '../data/raw/Modified Zip Code Tabulation Areas (MODZCTA)/geo_export_152003af-efec-4038-9b6f-1963116a24c2.shp'
-
-    The output HTML file will be saved to '../maps/nyc_heatmap.html'.
-
-Requirements:
-    - Pandas: For data manipulation.
-    - GeoPandas: For handling geospatial data.
-    - Folium: For creating the interactive map.
-
-The script contains functions to handle the loading, merging, and visualization steps. It can be modified to adjust for different
-data indicators, geographic areas, or visualization libraries as needed.
-
-Author: Alejandro Diaz
-"""
 
 def generate_heatmap(cleaned_data_path, shapefile_path, output_map_path):
     """
