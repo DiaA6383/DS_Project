@@ -1,3 +1,6 @@
+import geopandas as gpd
+import folium
+import pandas as pd
 """
 Visualize Heatmap of NYC Data
 
@@ -24,24 +27,34 @@ Requirements:
 The script contains functions to handle the loading, merging, and visualization steps. It can be modified to adjust for different
 data indicators, geographic areas, or visualization libraries as needed.
 
-Author: [Your Name]
-Date: [Date of Creation]
+Author: Alejandro Diaz
 """
-import geopandas as gpd
-import folium
-import pandas as pd
 
 def generate_heatmap(cleaned_data_path, shapefile_path, output_map_path):
-    #load cleaned data
+    """
+    Generate a heatmap of NYC data.
+
+    Parameters:
+    cleaned_data_path (str): Path to the cleaned data CSV file.
+    shapefile_path (str): Path to the NYC ZIP code shapefile.
+    output_map_path (str): Path to save the output map HTML file.
+
+    Returns:
+    None
+    """
+    # Load cleaned data
     cleaned_data = pd.read_csv(cleaned_data_path)
-    #load shapefile
+
+    # Load shapefile
     nyc_shapefile = gpd.read_file(shapefile_path)
-    #merge cleaned data with the shapefile
+
+    # Merge cleaned data with the shapefile
     nyc_data_merged = nyc_shapefile.merge(cleaned_data, left_on='ZIPCODE', right_on='Zip Code')
-    #create map
+
+    # Create map
     m = folium.Map(location=[40.693943, -73.985880], zoom_start=10)
 
-    #Add choropleth layer to map
+    # Add choropleth layer to map
     folium.Choropleth(
         geo_data=nyc_data_merged,
         name='choropleth',
@@ -54,14 +67,14 @@ def generate_heatmap(cleaned_data_path, shapefile_path, output_map_path):
         legend_name='Total Households'
     ).add_to(m)
 
-    #save to map
+    # Save to map
     m.save(output_map_path)
 
-    if __name__ == '__main__':
-        # Define the paths to the cleaned data CSV file, shapefile, and output map HTML file
-        CLEANED_DATA_PATH = '../data/processed/cleaned_data.csv'
-        SHAPEFILE_PATH = '../data/raw/Modified Zip Code Tabulation Areas (MODZCTA)/geo_export_152003af-efec-4038-9b6f-1963116a24c2.shp'
-        OUTPUT_MAP_PATH = '../maps/nyc_heatmap.html'
+if __name__ == '__main__':
+    # Define the paths to the cleaned data CSV file, shapefile, and output map HTML file
+    CLEANED_DATA_PATH = '../data/processed/cleaned_data.csv'
+    SHAPEFILE_PATH = '../data/raw/Modified Zip Code Tabulation Areas (MODZCTA)/geo_export_152003af-efec-4038-9b6f-1963116a24c2.shp'
+    OUTPUT_MAP_PATH = '../maps/nyc_heatmap.html'
 
-        # Generate the heatmap
-        generate_heatmap(CLEANED_DATA_PATH, SHAPEFILE_PATH, OUTPUT_MAP_PATH)
+    # Generate the heatmap
+    generate_heatmap(CLEANED_DATA_PATH, SHAPEFILE_PATH, OUTPUT_MAP_PATH)
