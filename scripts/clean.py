@@ -6,41 +6,40 @@ CSV_FILE_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/raw/ACSST
 CLEANED_DATA_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/processed/cleaned_data.csv'
 
 def load_metadata(file_path):
-    # Load the metadata from the CSV file into a pandas DataFrame
     metadata = pd.read_csv(file_path)
-    # Create a dictionary that maps the 'Column Name' to the 'Label'
     rename_dict = dict(zip(metadata['Column Name'], metadata['Label']))
     return rename_dict
 
-def clean_data(file_path, rename_dict):
-    # Load the data from the CSV file into a pandas DataFrame
+def load_data(file_path):
     data = pd.read_csv(file_path, header=1)
-    # Rename the columns based on the metadata
+    return data
+
+def rename_columns(data, rename_dict):
     data.rename(columns=rename_dict, inplace=True)
-    # Clean the 'Geographic Area Name' column and rename it to 'Zip Code'
+    return data
+
+def clean_data(data):
     data.rename(columns={'Geographic Area Name': 'Zip Code'}, inplace=True)
     data['Zip Code'] = data['Zip Code'].str.replace('ZCTA5 ', '')
-    # Drop the 'Geography' column and columns that start with 'Annotation' or 'Margin of Error!!'
     data.drop(columns=['Geography'], inplace=True)
     data.drop(data.columns[data.columns.str.startswith(('Annotation', 'Margin of Error!!'))], axis=1, inplace=True)
-    # Replace 'Estimate!!' and 'Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!' in column names
     data.columns = data.columns.str.replace('Estimate!!', '')
     data.columns = data.columns.str.replace('Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!', 'Number of ')
     data.columns = data.columns.str.replace("Number!!FAMILIES!!", "Number of ")
-    #Drop Race Columns
     data.drop(data.columns[2:15], axis=1, inplace=True)
-    #Rename second column named "Number of Households" with "Total Households"
     data.rename(columns={'Number of Households': 'Total Households'}, inplace=True)
-    #drop 4th and 5th columns
-    data.drop(data.columns[4:6], axis=1, inplace=True)
+    data.rename(columns={'Number of Families!!With own children of householder under 18 years': 'Number Families with Children'}, inplace=True)
+    data.rename(columns={'Number of Families!!With no own children of householder under 18 years': 'Number of Families with NO Children'}, inplace=True)
+    data.rename(columns={'Number!!FAMILY INCOME BY NUMBER OF EARNERS!!No earners': 'Families with no Earners'}, inplace=True)
+    data.drop(data.columns[5:17], axis=1, inplace=True)
+    data.drop(data.columns[6:26], axis=1, inplace=True)
     return data
 
 def main():
-    # Load the renaming dictionary from the metadata file
     rename_dict = load_metadata(METADATA_FILE_PATH)
-    # Clean the data with the renaming dictionary
-    cleaned_data = clean_data(CSV_FILE_PATH, rename_dict)
-    # Save the cleaned data to a CSV file, without the index
+    data = load_data(CSV_FILE_PATH)
+    data = rename_columns(data, rename_dict)
+    cleaned_data = clean_data(data)
     cleaned_data.to_csv(CLEANED_DATA_PATH, index=False)
 
 if __name__ == '__main__':
