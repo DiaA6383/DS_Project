@@ -1,10 +1,14 @@
 import pandas as pd
 
-# Define the paths to the metadata, data, and cleaned data CSV files
-METADATA_FILE_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/raw/ACSST5Y2021.S1903_2023-11-14T204901/metadata.csv'
-CSV_FILE_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/raw/ACSST5Y2021.S1903_2023-11-14T204901/data.csv'
-CLEANED_DATA_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/processed/cleaned_data.csv'
+import os
 
+# Get the current directory
+current_dir = os.path.dirname(os.path.realpath(__file__))
+
+# Define the paths to the metadata, data, and cleaned data CSV files
+METADATA_FILE_PATH = os.path.join(current_dir, '../data/raw/ACSST5Y2021.S1903_2023-11-14T204901/metadata.csv')
+CSV_FILE_PATH = os.path.join(current_dir, '../data/raw/ACSST5Y2021.S1903_2023-11-14T204901/data.csv')
+CLEANED_DATA_PATH = os.path.join(current_dir, '../data/processed/cleaned_data.csv')
 
 def load_metadata(file_path):
     """
