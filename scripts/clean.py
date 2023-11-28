@@ -49,6 +49,14 @@ def clean_data(data):
     data.columns = data.columns.str.replace('Estimate!!', '')
     data.columns = data.columns.str.replace('Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!', 'Number of ')
     data.columns = data.columns.str.replace("Number!!FAMILIES!!", "Number of ")
+    data.columns = data.columns.str.replace("Number of Families!!With own children of householder under 18 years", "Number of Families with Children")
+    data.columns = data.columns.str.replace("Number of Families!!With no own children of householder under 18 years", "Number of Families with NO Children")
+    data.columns = data.columns.str.replace("Number!!FAMILY INCOME BY NUMBER OF EARNERS!!No earners", "Families with no Earners")
+    data.columns = data.columns.str.replace("Percent Distribution!!FAMILIES!!", "Percent Distribution of ")
+    data.columns = data.columns.str.replace("Percent Distribution of Families!!With own children of householder under 18 years", "Percent Distribution of Families with Children")
+    data.columns = data.columns.str.replace("Percent Distribution of Families!!With no own children of householder under 18 years", "Percent Distribution of Families with NO Children")
+    data.columns = data.columns.str.replace("Median income (dollars)!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households", "Median Income of all Households") 
+    data.columns = data.columns.str.replace("Median income (dollars)!!FAMILIES!!Families", "Median Income of all Families")
     data.drop(data.columns[2:15], axis=1, inplace=True)
     data.drop(data.columns[5:17], axis=1, inplace=True)
     data.drop(data.columns[6:26], axis=1, inplace=True)
@@ -58,10 +66,12 @@ def clean_data(data):
     data.drop(data.columns[11::], axis=1, inplace=True)
     return data
 
+
 def main():
     """
     Main function to load, rename, clean, and save the data.
     """
+    # Load the data
     data = load_data(CSV_FILE_PATH)
     data = rename_columns(data)
     cleaned_data = clean_data(data)
