@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Data Analysis</title>
+</head>
+<body>
+    <form method="post">
+        Income Weight: <input type="number" name="income_weight" step="0.01"><br>
+        Children Weight: <input type="number" name="children_weight" step="0.01"><br>
+        <!-- Add more inputs as needed -->
+        <input type="submit" value="Analyze">
+    </form>
+
+    {% if result %}
+        <h2>Analysis Result:</h2>
+        <p>{{ result }}</p>
+    {% endif %}
+</body>
+</html>
