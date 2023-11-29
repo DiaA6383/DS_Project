@@ -10,7 +10,9 @@ def load_shapefile(shapefile_path):
     return gpd.read_file(shapefile_path)
 
 def load_cleaned_data(data_path):
-    return pd.read_csv(data_path)
+    data = pd.read_csv(data_path)
+    print(data.columns)
+    return data
 
 def merge_data(gdf, cleaned_data):
     gdf['zcta'] = gdf['zcta'].astype(str)
