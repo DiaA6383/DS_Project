@@ -17,11 +17,17 @@ def load_cleaned_data(data_path):
 def merge_data(gdf, cleaned_data):
     gdf['zcta'] = gdf['zcta'].astype(str)
     cleaned_data['Zip Code'] = cleaned_data['Zip Code'].astype(str)
-    return gdf.merge(cleaned_data, left_on='zcta', right_on='Zip Code')
+    merged = gdf.merge(cleaned_data, left_on='zcta', right_on='Zip Code')
+    merged['Median Income of all Families'] = pd.to_numeric(merged['Median Income of all Families'], errors='coerce')
+    merged['Median Income of all Families'].fillna(merged['Median Income of all Families'].median(), inplace=True)
+    merged['Income Level'] = pd.cut(merged['Median Income of all Families'], bins=4, labels=["Low", "Medium", "High", "Very high"])
+    return merged
 
 def plot_data(merged):
     fig, ax = plt.subplots(1, 1, figsize=(12, 8))
-    merged.plot(column='Median Income of all Families', ax=ax, legend=True, cmap='coolwarm')
+    merged.plot(column='Income Level', ax=ax, legend=True, cmap='Reds', categorical=True)
+    leg = ax.get_legend()
+    leg.set_title('Income Levels')
     ctx.add_basemap(ax, source=ctx.providers.OpenStreetMap.Mapnik, crs=merged.crs.to_string())
     ax.set_axis_off()
     plt.title('Heatmap of Median Family Income by Zip Code')
