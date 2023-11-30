@@ -60,6 +60,12 @@ def clean_data(data):
     data.columns = data.columns.str.replace("Percent Distribution of Families!!With no own children of householder under 18 years", "Percent Distribution of Families with NO Children")
     data.columns = data.columns.str.replace("Median income (dollars)!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households", "Median Income of all Households") 
     data.columns = data.columns.str.replace("Median income (dollars)!!FAMILIES!!Families", "Median Income of all Families")
+     # Handle special values like "250,000+"
+    # For example, convert "250,000+" to 250000 in 'Median Income of all Families' column
+    data['Median Income of all Families'] = data['Median Income of all Families'].replace('250,000+', '250000')
+
+    # Convert the 'Median Income of all Families' column to numeric
+    data['Median Income of all Families'] = pd.to_numeric(data['Median Income of all Families'], errors='coerce')
     data.drop(data.columns[2:15], axis=1, inplace=True)
     data.drop(data.columns[5:17], axis=1, inplace=True)
     data.drop(data.columns[6:26], axis=1, inplace=True)
