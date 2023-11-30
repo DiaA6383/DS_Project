@@ -16,11 +16,22 @@ def preprocess_data(data):
     """
     Preprocess the data by handling missing values and creating a binary outcome.
     """
+    # Convert the column to string to ensure the .str methods work
+    data['Median Income of all Families'] = data['Median Income of all Families'].astype(str)
+    
+    # Handle the special case where income is represented as '250,000+'
+    data['Median Income of all Families'] = data['Median Income of all Families'].replace('250,000+', '250000')
+    
+    # Convert the column to numeric, coercing errors to NaN
+    data['Median Income of all Families'] = pd.to_numeric(data['Median Income of all Families'], errors='coerce')
+
     # Assume an arbitrary income threshold to simulate purchase likelihood
-    income_threshold = 80000
+    income_threshold = 80000  # Adjust this threshold based on your understanding of the data
     data['Purchase_Likelihood'] = (data['Median Income of all Families'] > income_threshold).astype(int)
-    # Handle missing values, if any
-    data = data.fillna(data.median())
+
+    # Handle missing values by dropping them
+    data.dropna(subset=['Median Income of all Families'], inplace=True)
+
     return data
 
 def train_model(X_train, y_train):
