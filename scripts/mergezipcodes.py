@@ -9,7 +9,7 @@ def merge_data_with_geocodes(data, gdf):
     return data.merge(gdf[['ZCTA5CE10', 'latitude', 'longitude']], left_on='Zip Code', right_on='ZCTA5CE10')
 
 # Load the shapefile
-shapefile_path = '/path/to/tl_2016_us_zcta510.shp'
+shapefile_path = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/raw/tl_2016_us_zcta510/tl_2016_us_zcta510.shp'
 gdf = gpd.read_file(shapefile_path)
 
 # Convert the geometries to a projected CRS before calculating the centroids
@@ -24,7 +24,7 @@ gdf['latitude'] = centroids_geo.y
 gdf['longitude'] = centroids_geo.x
 
 # Load your existing data
-data_path = '/path/to/cleaned_data.csv'
+data_path = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/processed/cleaned_data.csv'
 data = pd.read_csv(data_path)
 data['Zip Code'] = data['Zip Code'].astype(str)
 
@@ -32,7 +32,7 @@ data['Zip Code'] = data['Zip Code'].astype(str)
 merged_data = merge_data_with_geocodes(data, gdf)
 
 # Save the merged data
-merged_data.to_csv('/path/to/save/merged_data.csv', index=False)
+merged_data.to_csv('/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/processed/merged_data.csv', index=False)
 
 # Unit tests
 class TestMergeDataWithGeocodes(unittest.TestCase):
