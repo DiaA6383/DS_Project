@@ -31,6 +31,8 @@ data['Zip Code'] = data['Zip Code'].astype(str)
 # Merge the dataframes on the Zip Code
 merged_data = merge_data_with_geocodes(data, gdf)
 
+if 'ZCTA5CE10' in merged_data.columns:
+    merged_data = merged_data.drop(columns='ZCTA5CE10')
 # Save the merged data
 merged_data.to_csv('/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/processed/merged_data.csv', index=False)
 
