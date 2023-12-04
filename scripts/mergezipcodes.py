@@ -5,6 +5,13 @@ import pandas as pd
 def merge_data_with_geocodes(data, gdf):
     """
     Merge the main data DataFrame with the GeoDataFrame containing latitude and longitude.
+    
+    Parameters:
+    - data (pandas.DataFrame): The main data DataFrame.
+    - gdf (geopandas.GeoDataFrame): The GeoDataFrame containing latitude and longitude.
+    
+    Returns:
+    - pandas.DataFrame: The merged DataFrame.
     """
     return data.merge(gdf[['ZCTA5CE10', 'latitude', 'longitude']], left_on='Zip Code', right_on='ZCTA5CE10')
 

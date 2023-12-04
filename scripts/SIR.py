@@ -5,6 +5,19 @@ from scipy.integrate import odeint
 
 
 def deriv(y, t, N, beta, gamma):
+    """
+    Calculate the derivatives of the SIR model.
+
+    Parameters:
+    - y (tuple): Tuple containing the current values of S, I, and R.
+    - t (float): Current time.
+    - N (int): Total population.
+    - beta (float): Contact rate.
+    - gamma (float): Recovery rate.
+
+    Returns:
+    - tuple: Tuple containing the derivatives of S, I, and R.
+    """
     S, I, R = y
     dSdt = -beta * S * I / N
     dIdt = beta * S * I / N - gamma * I
@@ -14,6 +27,21 @@ def deriv(y, t, N, beta, gamma):
 
 @dataclass
 class SIRDiagram:
+    """
+    Class representing the SIR diagram.
+
+    Attributes:
+    - n (int): Total population.
+    - i (int): Initial number of infected individuals.
+    - r (int): Initial number of recovered individuals.
+    - beta (float): Contact rate.
+    - gamma (float): Recovery rate.
+    - steps (int): Number of simulation steps.
+
+    Methods:
+    - s(): Calculate the number of susceptible individuals.
+    - plot(): Plot the SIR diagram.
+    """
     n: int = 1000
     i: int = 1
     r: int = 0
@@ -22,9 +50,18 @@ class SIRDiagram:
     steps: int = 160
 
     def s(self) -> int:
+        """
+        Calculate the number of susceptible individuals.
+
+        Returns:
+        - int: Number of susceptible individuals.
+        """
         return self.n - self.i - self.r
 
     def plot(self):
+        """
+        Plot the SIR diagram.
+        """
         t = np.linspace(0, self.steps, self.steps)
         y0 = self.s(), self.i, self.r
         N, beta, gamma = self.n, self.beta, self.gamma
@@ -53,6 +90,9 @@ class SIRDiagram:
 
 
 def main():
+    """
+    Main function to run the SIR diagram simulation.
+    """
     diagram = SIRDiagram()
     diagram.plot()
 
