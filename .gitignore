@@ -4,6 +4,8 @@ venv/
 # Data files
 data/*.csv
 data/raw/
+/System/Volumes/Data/Users/alejandrodiaz/Downloads/tl_2016_us_zcta510/tl_2016_us_zcta510.shp
+/Users/alejandrodiaz/Downloads/tl_2016_us_zcta510/tl_2016_us_zcta510.shp
 
 # If you have specific CSV files you want to include, you can negate the ignore with !:
 # !data/important-dataset.csv
