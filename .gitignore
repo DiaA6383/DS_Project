@@ -3,6 +3,7 @@ venv/
 
 # Data files
 data/*.csv
+data/raw/
 
 # If you have specific CSV files you want to include, you can negate the ignore with !:
 # !data/important-dataset.csv
