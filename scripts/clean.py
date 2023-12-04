@@ -45,6 +45,12 @@ def rename_columns(data):
 def clean_data(data):
     """
     Clean the data by dropping unnecessary columns, and modifying column values.
+
+    Parameters:
+    data (DataFrame): The input data to be cleaned.
+
+    Returns:
+    DataFrame: The cleaned data.
     """
     data['Zip Code'] = data['Zip Code'].str.replace('ZCTA5 ', '')
     data.drop(columns=['Geography'], inplace=True)
