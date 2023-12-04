@@ -1,0 +1,2 @@
+*.csv filter=lfs diff=lfs merge=lfs -text
+data/raw/tl_2016_us_zcta510/tl_2016_us_zcta510.shp filter=lfs diff=lfs merge=lfs -text
