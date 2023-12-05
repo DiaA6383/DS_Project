@@ -1,15 +1,23 @@
 import pandas as pd
 from geopy.geocoders import Nominatim
 
-# Read the CSV file into a DataFrame and remove leading/trailing spaces and tabs
-csv_file = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/raw/bookstores.csv'
+import os
+
+
+
+# Get the current directory
+current_directory = os.path.dirname(os.path.abspath(__file__))
+
+# Define the relative paths for the CSV files
+csv_file = os.path.join(current_directory, '../data/raw/bookstores.csv')
+cleaned_csv_file = os.path.join(current_directory, '../data/raw/cleaned_bookstores.csv')
+output_directory = os.path.join(current_directory, '../data/processed')
 
 # Read the CSV file and strip leading/trailing spaces and tabs from each field
 with open(csv_file, 'r') as file:
     cleaned_lines = [line.strip() for line in file]
 
 # Create a new cleaned CSV file
-cleaned_csv_file = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/raw/cleaned_bookstores.csv'
 with open(cleaned_csv_file, 'w') as file:
     file.writelines(cleaned_lines)
 
@@ -31,8 +39,7 @@ def get_zipcode(address):
 df['Zip Code'] = df['Address'].apply(get_zipcode)
 
 # Define the output CSV file path
-output_directory = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/processed'
-output_csv_file = f'{output_directory}/bookstores_with_zipcode.csv'
+output_csv_file = os.path.join(output_directory, 'bookstores_with_zipcode.csv')
 
 # Save the DataFrame back to a CSV file with the "Zip Code" column
 df.to_csv(output_csv_file, index=False)
