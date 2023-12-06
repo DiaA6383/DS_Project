@@ -6,6 +6,7 @@ Resources: OpenDataNYC
 #!MOST OF THIS IS JUST FOR AUTOMATIC GRADING PURPOSES!
 import pandas as pd
 import geopandas as gpd
+import contextily as ctx
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
@@ -191,11 +192,11 @@ class SIRDiagram:
         t = np.linspace(0, self.simulation_steps, self.simulation_steps)
         y0 = self.susceptible(), self.initial_infected, self.initial_recovered
         ret = odeint(deriv, y0, t, args=(self.total_population, self.contact_rate, self.recovery_rate))
-        S, I, R = ret.T
+        susceptible, infected, recovered = ret.T
 
-        ax.plot(t, S, "b", alpha=0.5, lw=2, label="Potential Customer")
-        ax.plot(t, I, "r", alpha=0.5, lw=2, label="Informed")
-        ax.plot(t, R, "g", alpha=0.5, lw=2, label="Decided Not to Buy")
+        ax.plot(t, susceptible, "b", alpha=0.5, lw=2, label="Potential Customer")
+        ax.plot(t, infected, "r", alpha=0.5, lw=2, label="Informed")
+        ax.plot(t, recovered, "g", alpha=0.5, lw=2, label="Decided Not to Buy")
 
 
 def deriv(y, t, total_population, contact_rate, recovery_rate):
