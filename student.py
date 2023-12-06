@@ -15,20 +15,25 @@ from plotly.offline import iplot
 from scipy.integrate import odeint
 import numpy as np
 
-# Define the data paths
+# Define data paths
 CLEANED_DATA_PATH = 'data/processed/cleaned_data.csv'
-SHAPERAW_DATA_PATH = 'data/raw/Modified Zip Code Tabulation Areas (MODZCTA)/geo_export_152003af-efec-4038-9b6f-1963116a24c2.shp'
+SHAPERAW_DATA_PATH = (
+    'data/raw/Modified Zip Code Tabulation Areas (MODZCTA)/'
+    'geo_export_152003af-efec-4038-9b6f-1963116a24c2.shp'
+)
 RAW_DATA_PATH = 'data/raw/ACSST5Y2021.S1903_2023-11-14T204901/data.csv'
 META_DATA_PATH = 'data/raw/ACSST5Y2021.S1903_2023-11-14T204901/metadata.csv'
+
+
 def load_and_preprocess_data(data_path):
     """
-    Load and preprocess data from a CSV file.
+    Load and preprocess the data.
 
-    Args:
-        data_path (str): The path to the CSV file.
+    Parameters:
+    data_path (str): Path to the data file.
 
     Returns:
-        pandas.DataFrame: The preprocessed data.
+    DataFrame: Preprocessed data.
     """
     df = pd.read_csv(data_path)
     df['Median Income of all Families'] = pd.to_numeric(
@@ -38,26 +43,21 @@ def load_and_preprocess_data(data_path):
     df['Median Income of all Families'] = imputer.fit_transform(
         df[['Median Income of all Families']]
     )
-    df.dropna(
-        subset=['longitude', 'latitude', 'Median Income of all Families'], 
-        inplace=True
-    )
+    df.dropna(subset=['longitude', 'latitude', 'Median Income of all Families'],
+              inplace=True)
     df['Scaled_Income'] = df['Median Income of all Families'] / 1000
     return df
+
 
 def perform_clustering(df):
     """
     Perform clustering on the dataframe if 'Cluster' column does not exist.
-    
+
     Parameters:
-    - df: pandas DataFrame
-        The input dataframe containing the data to be clustered.
-    
+    df (DataFrame): Data to cluster.
+
     Returns:
-    - df: pandas DataFrame
-        The input dataframe with an additional 'Cluster' column if it does not exist.
-    
-    Clustering is based on 'longitude', 'latitude', and 'Median Income of all Families'.
+    DataFrame: Data with added 'Cluster' column.
     """
     if 'Cluster' not in df.columns:
         features = df[['longitude', 'latitude', 'Median Income of all Families']]
@@ -67,39 +67,41 @@ def perform_clustering(df):
         df['Cluster'] = kmeans.fit_predict(features_scaled)
     return df
 
+
 def create_location_plot(df):
     """
-    Create a location plot based on the dataframe.
+    Create a location-based plot.
+
+    Parameters:
+    df (DataFrame): Data to plot.
+
+    Returns:
+    None
     """
     scaling_factor = df['Median Income of all Families'].max() / 100
     df['Scaled_Income'] = df['Median Income of all Families'] / scaling_factor
-
-    data = [
-        {
-            'x': df["longitude"],
-            'y': df["latitude"],
-            'text': df.apply(
-                lambda row: f'ZIP: {row["Zip Code"]}<br>Income: ${row["Median Income of all Families"]}', 
-                axis=1
-            ),
-            'mode': 'markers',
-            'marker': {
-                'color': df["Cluster"],
-                'size': df['Scaled_Income'],
-                'opacity': 0.5,
-                'showscale': True,
-                'colorscale': 'Portland'
-            }
+    data = [{
+        'x': df["longitude"],
+        'y': df["latitude"],
+        'text': df.apply(
+            lambda row: f'ZIP: {row["Zip Code"]}<br>Income: ${row["Median Income of all Families"]}',
+            axis=1
+        ),
+        'mode': 'markers',
+        'marker': {
+            'color': df["Cluster"],
+            'size': df['Scaled_Income'],
+            'opacity': 0.5,
+            'showscale': True,
+            'colorscale': 'Portland'
         }
-    ]
-
+    }]
     layout = go.Layout(
         title='New York ZIP Code Clusters (Median Income of all Families)',
-        xaxis=dict(title='Longitude', range=[-74.3, -73.8]),
-        yaxis=dict(title='Latitude', range=[40.5, 40.9]),
+        xaxis={'title': 'Longitude', 'range': [-74.3, -73.8]},
+        yaxis={'title': 'Latitude', 'range': [40.5, 40.9]},
         hovermode='closest'
     )
-
     fig = go.Figure(data=data, layout=layout)
     iplot(fig)
 
@@ -150,33 +152,34 @@ class SIRDiagram:
     Class representing the SIR (Susceptible, Infected, Recovered) model.
     """
 
-    def __init__(self, n, i, r, beta, gamma, steps):
+    def __init__(self, total_population, initial_infected, initial_recovered,
+                 contact_rate, recovery_rate, simulation_steps):
         """
         Initialize the SIRDiagram instance.
 
         Parameters:
-        n (int): Total population.
-        i (int): Initial number of infected individuals.
-        r (int): Initial number of recovered individuals.
-        beta (float): Contact rate.
-        gamma (float): Recovery rate.
-        steps (int): Number of simulation steps.
+        total_population (int): Total population.
+        initial_infected (int): Initial number of infected individuals.
+        initial_recovered (int): Initial number of recovered individuals.
+        contact_rate (float): Contact rate.
+        recovery_rate (float): Recovery rate.
+        simulation_steps (int): Number of simulation steps.
         """
-        self.n = n
-        self.i = i
-        self.r = r
-        self.beta = beta
-        self.gamma = gamma
-        self.steps = steps
+        self.total_population = total_population
+        self.initial_infected = initial_infected
+        self.initial_recovered = initial_recovered
+        self.contact_rate = contact_rate
+        self.recovery_rate = recovery_rate
+        self.simulation_steps = simulation_steps
 
-    def s(self):
+    def susceptible(self):
         """
         Calculate the number of susceptible individuals.
 
         Returns:
         int: Number of susceptible individuals.
         """
-        return self.n - self.i - self.r
+        return self.total_population - self.initial_infected - self.initial_recovered
 
     def plot(self, ax):
         """
@@ -185,35 +188,35 @@ class SIRDiagram:
         Parameters:
         ax (matplotlib.axes.Axes): The axes to plot on.
         """
-        t = np.linspace(0, self.steps, self.steps)
-        y0 = self.s(), self.i, self.r
-        ret = odeint(deriv, y0, t, args=(self.n, self.beta, self.gamma))
+        t = np.linspace(0, self.simulation_steps, self.simulation_steps)
+        y0 = self.susceptible(), self.initial_infected, self.initial_recovered
+        ret = odeint(deriv, y0, t, args=(self.total_population, self.contact_rate, self.recovery_rate))
         S, I, R = ret.T
 
         ax.plot(t, S, "b", alpha=0.5, lw=2, label="Potential Customer")
         ax.plot(t, I, "r", alpha=0.5, lw=2, label="Informed")
         ax.plot(t, R, "g", alpha=0.5, lw=2, label="Decided Not to Buy")
 
-def deriv(y, t, N, beta, gamma):
+
+def deriv(y, t, total_population, contact_rate, recovery_rate):
     """
     Calculate the derivatives of S, I, R in SIR model.
 
     Parameters:
     y (tuple): Tuple containing S, I, R values.
     t (int): Time step.
-    N (int): Total population.
-    beta (float): Contact rate.
-    gamma (float): Recovery rate.
+    total_population (int): Total population.
+    contact_rate (float): Contact rate.
+    recovery_rate (float): Recovery rate.
 
     Returns:
     tuple: Derivatives of S, I, R.
     """
     S, I, R = y
-    dSdt = -beta * S * I / N
-    dIdt = beta * S * I / N - gamma * I
-    dRdt = gamma * I
+    dSdt = -contact_rate * S * I / total_population
+    dIdt = contact_rate * S * I / total_population - recovery_rate * I
+    dRdt = recovery_rate * I
     return dSdt, dIdt, dRdt
-
 # Load and preprocess the data
 data = load_and_preprocess_data(CLEANED_DATA_PATH)
 
