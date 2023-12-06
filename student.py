@@ -16,21 +16,49 @@ from scipy.integrate import odeint
 import numpy as np
 
 # Define the data paths
-CLEANED_DATA_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/processed/cleaned_data.csv'
-SHAPERAW_DATA_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/raw/Modified Zip Code Tabulation Areas (MODZCTA)/geo_export_152003af-efec-4038-9b6f-1963116a24c2.shp'
-RAW_DATA_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/raw/ACSST5Y2021.S1903_2023-11-14T204901/data.csv'
-META_DATA_PATH = '/Users/alejandrodiaz/Documents/GitHub/DS_Project/data/raw/ACSST5Y2021.S1903_2023-11-14T204901/metadata.csv'
-
+CLEANED_DATA_PATH = 'data/processed/cleaned_data.csv'
+SHAPERAW_DATA_PATH = 'data/raw/Modified Zip Code Tabulation Areas (MODZCTA)/geo_export_152003af-efec-4038-9b6f-1963116a24c2.shp'
+RAW_DATA_PATH = 'data/raw/ACSST5Y2021.S1903_2023-11-14T204901/data.csv'
+META_DATA_PATH = 'data/raw/ACSST5Y2021.S1903_2023-11-14T204901/metadata.csv'
 def load_and_preprocess_data(data_path):
+    """
+    Load and preprocess data from a CSV file.
+
+    Args:
+        data_path (str): The path to the CSV file.
+
+    Returns:
+        pandas.DataFrame: The preprocessed data.
+    """
     df = pd.read_csv(data_path)
-    df['Median Income of all Families'] = pd.to_numeric(df['Median Income of all Families'], errors='coerce')
+    df['Median Income of all Families'] = pd.to_numeric(
+        df['Median Income of all Families'], errors='coerce'
+    )
     imputer = SimpleImputer(strategy='median')
-    df['Median Income of all Families'] = imputer.fit_transform(df[['Median Income of all Families']])
-    df.dropna(subset=['longitude', 'latitude', 'Median Income of all Families'], inplace=True)
+    df['Median Income of all Families'] = imputer.fit_transform(
+        df[['Median Income of all Families']]
+    )
+    df.dropna(
+        subset=['longitude', 'latitude', 'Median Income of all Families'], 
+        inplace=True
+    )
     df['Scaled_Income'] = df['Median Income of all Families'] / 1000
     return df
 
 def perform_clustering(df):
+    """
+    Perform clustering on the dataframe if 'Cluster' column does not exist.
+    
+    Parameters:
+    - df: pandas DataFrame
+        The input dataframe containing the data to be clustered.
+    
+    Returns:
+    - df: pandas DataFrame
+        The input dataframe with an additional 'Cluster' column if it does not exist.
+    
+    Clustering is based on 'longitude', 'latitude', and 'Median Income of all Families'.
+    """
     if 'Cluster' not in df.columns:
         features = df[['longitude', 'latitude', 'Median Income of all Families']]
         scaler = StandardScaler()
@@ -40,19 +68,25 @@ def perform_clustering(df):
     return df
 
 def create_location_plot(df):
-    scaling_factor = df['Median Income of all Families'].max() / 100  # Adjust this value as needed
+    """
+    Create a location plot based on the dataframe.
+    """
+    scaling_factor = df['Median Income of all Families'].max() / 100
     df['Scaled_Income'] = df['Median Income of all Families'] / scaling_factor
 
     data = [
         {
             'x': df["longitude"],
             'y': df["latitude"],
-            'text': df.apply(lambda row: f'ZIP: {row["Zip Code"]}<br>Income: ${row["Median Income of all Families"]}', axis=1),
+            'text': df.apply(
+                lambda row: f'ZIP: {row["Zip Code"]}<br>Income: ${row["Median Income of all Families"]}', 
+                axis=1
+            ),
             'mode': 'markers',
             'marker': {
                 'color': df["Cluster"],
                 'size': df['Scaled_Income'],
-                'opacity': 0.5,  # You may want to lower this further
+                'opacity': 0.5,
                 'showscale': True,
                 'colorscale': 'Portland'
             }
@@ -70,9 +104,23 @@ def create_location_plot(df):
     iplot(fig)
 
 def run_sir_for_cluster(cluster_id, initial_infected, beta, gamma, steps, data):
+    """
+    Run the SIR model for a specific cluster.
+
+    Parameters:
+    cluster_id (int): The ID of the cluster to run the model for.
+    initial_infected (int): The initial number of infected individuals.
+    beta (float): The contact rate.
+    gamma (float): The recovery rate.
+    steps (int): The number of simulation steps.
+    data (DataFrame): The data containing the cluster information.
+
+    Returns:
+    None
+    """
     # Filter data for the current cluster
     cluster_data = data[data['Cluster'] == cluster_id]
-    
+
     # Calculate the total number of households for the current cluster
     total_households = cluster_data['Number of Households'].sum()
 
@@ -89,7 +137,7 @@ def run_sir_for_cluster(cluster_id, initial_infected, beta, gamma, steps, data):
     # Create a subplot for the current cluster
     fig, ax = plt.subplots()
     sir_model.plot(ax)
-    
+
     # Set plot title and labels specific to the current cluster
     ax.set_title(f"SIR Model: Cluster {cluster_id}")
     ax.set_xlabel("Time /days")
@@ -98,7 +146,22 @@ def run_sir_for_cluster(cluster_id, initial_infected, beta, gamma, steps, data):
     plt.show()
 
 class SIRDiagram:
+    """
+    Class representing the SIR (Susceptible, Infected, Recovered) model.
+    """
+
     def __init__(self, n, i, r, beta, gamma, steps):
+        """
+        Initialize the SIRDiagram instance.
+
+        Parameters:
+        n (int): Total population.
+        i (int): Initial number of infected individuals.
+        r (int): Initial number of recovered individuals.
+        beta (float): Contact rate.
+        gamma (float): Recovery rate.
+        steps (int): Number of simulation steps.
+        """
         self.n = n
         self.i = i
         self.r = r
@@ -107,9 +170,21 @@ class SIRDiagram:
         self.steps = steps
 
     def s(self):
+        """
+        Calculate the number of susceptible individuals.
+
+        Returns:
+        int: Number of susceptible individuals.
+        """
         return self.n - self.i - self.r
 
     def plot(self, ax):
+        """
+        Plot the SIR diagram.
+
+        Parameters:
+        ax (matplotlib.axes.Axes): The axes to plot on.
+        """
         t = np.linspace(0, self.steps, self.steps)
         y0 = self.s(), self.i, self.r
         ret = odeint(deriv, y0, t, args=(self.n, self.beta, self.gamma))
@@ -120,6 +195,19 @@ class SIRDiagram:
         ax.plot(t, R, "g", alpha=0.5, lw=2, label="Decided Not to Buy")
 
 def deriv(y, t, N, beta, gamma):
+    """
+    Calculate the derivatives of S, I, R in SIR model.
+
+    Parameters:
+    y (tuple): Tuple containing S, I, R values.
+    t (int): Time step.
+    N (int): Total population.
+    beta (float): Contact rate.
+    gamma (float): Recovery rate.
+
+    Returns:
+    tuple: Derivatives of S, I, R.
+    """
     S, I, R = y
     dSdt = -beta * S * I / N
     dIdt = beta * S * I / N - gamma * I
@@ -144,11 +232,18 @@ data['Zip Code'] = data['Zip Code'].astype(str)
 merged = gdf.merge(data, left_on='zcta', right_on='Zip Code')
 
 # Handle missing values in the merged data
-merged['Median Income of all Families'] = pd.to_numeric(merged['Median Income of all Families'], errors='coerce')
-merged['Median Income of all Families'].fillna(merged['Median Income of all Families'].median(), inplace=True)
+merged['Median Income of all Families'] = pd.to_numeric(
+    merged['Median Income of all Families'], errors='coerce'
+)
+merged['Median Income of all Families'].fillna(
+    merged['Median Income of all Families'].median(), inplace=True
+)
 
 # Create income level categories
-merged['Income Level'] = pd.cut(merged['Median Income of all Families'], bins=4, labels=["Low", "Medium", "High", "Very high"])
+merged['Income Level'] = pd.cut(
+    merged['Median Income of all Families'], bins=4, 
+    labels=["Low", "Medium", "High", "Very high"]
+)
 
 # Plot the merged data
 fig, ax = plt.subplots(1, 1, figsize=(12, 8))
