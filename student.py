@@ -106,6 +106,7 @@ def create_location_plot(df):
     fig = go.Figure(data=data, layout=layout)
     iplot(fig)
 
+
 def run_sir_for_cluster(cluster_id, initial_infected, beta, gamma, steps, data):
     """
     Run the SIR model for a specific cluster.
@@ -129,12 +130,12 @@ def run_sir_for_cluster(cluster_id, initial_infected, beta, gamma, steps, data):
 
     # Create an SIRDiagram instance for the current cluster
     sir_model = SIRDiagram(
-        n=total_households,
-        i=initial_infected,
-        r=0,
-        beta=beta,
-        gamma=gamma,
-        steps=steps
+        total_population=total_households,
+        initial_infected=initial_infected,
+        initial_recovered=0,
+        contact_rate=beta,
+        recovery_rate=gamma,
+        simulation_steps=steps
     )
 
     # Create a subplot for the current cluster
@@ -147,6 +148,7 @@ def run_sir_for_cluster(cluster_id, initial_infected, beta, gamma, steps, data):
     ax.set_ylabel("Number")
     ax.legend()
     plt.show()
+
 
 class SIRDiagram:
     """
@@ -218,6 +220,7 @@ def deriv(y, t, total_population, contact_rate, recovery_rate):
     d_infected_dt = contact_rate * susceptible * infected / total_population - recovery_rate * infected
     d_recovered_dt = recovery_rate * infected
     return d_susceptible_dt, d_infected_dt, d_recovered_dt
+
 # Load and preprocess the data
 data = load_and_preprocess_data(CLEANED_DATA_PATH)
 
