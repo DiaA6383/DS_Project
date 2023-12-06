@@ -201,7 +201,7 @@ class SIRDiagram:
         ax.plot(t, recovered, "g", alpha=0.5, lw=2, label="Decided Not to Buy")
 
 
-def deriv(y, t, total_population, contact_rate, recovery_rate):
+def deriv(y, total_population, contact_rate, recovery_rate):
     """
     Calculate the derivatives of S, I, R in SIR model.
 
