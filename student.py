@@ -212,11 +212,11 @@ def deriv(y, t, total_population, contact_rate, recovery_rate):
     Returns:
     tuple: Derivatives of S, I, R.
     """
-    S, I, R = y
-    dSdt = -contact_rate * S * I / total_population
-    dIdt = contact_rate * S * I / total_population - recovery_rate * I
-    dRdt = recovery_rate * I
-    return dSdt, dIdt, dRdt
+    susceptible, infected, _ = y
+    d_susceptible_dt = -contact_rate * susceptible * infected / total_population
+    d_infected_dt = contact_rate * susceptible * infected / total_population - recovery_rate * infected
+    d_recovered_dt = recovery_rate * infected
+    return d_susceptible_dt, d_infected_dt, d_recovered_dt
 # Load and preprocess the data
 data = load_and_preprocess_data(CLEANED_DATA_PATH)
 
@@ -259,11 +259,11 @@ plt.title('Heatmap of Median Family Income by Zip Code')
 plt.show()
 
 # Define SIR model parameters
-initial_infected = 10
-beta = 0.3
-gamma = 0.1
-steps = 200
+INITIAL_INFECTED = 10
+BETA = 0.3
+GAMMA = 0.1
+STEPS = 200
 
 # Run SIR model for each cluster
 for cluster_id in range(4):
-    run_sir_for_cluster(cluster_id, initial_infected, beta, gamma, steps, data)
+    run_sir_for_cluster(cluster_id, INITIAL_INFECTED, BETA, GAMMA, STEPS, data)
